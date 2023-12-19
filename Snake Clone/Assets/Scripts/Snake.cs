@@ -171,7 +171,6 @@ public class Snake : MonoBehaviour
 
         bool leftRight = previousTile.x == nextTile.x;
         bool upDown = previousTile.y == nextTile.y;
-        bool previousHorizontalCross = nextTile.x 
 
         if(leftRight || upDown)
         {
