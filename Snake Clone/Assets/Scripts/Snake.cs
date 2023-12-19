@@ -9,17 +9,11 @@ public class Snake : MonoBehaviour
 
     GridManager grid;
     private int gridMax;
-    // use
+
     private int gridAdjusted; // (gridMax + 1 ) / 2; - used align game objects to grid indexes - without 3,3 would end up being (6,6)
     private static string[] directions = { "Up", "Down", "Left", "Right" };
     private string currentDirection = directions[0];
-    private static Vector3 headCoordinates;
     private List<Vector3> snakeBody = new List<Vector3>();
-    //{
-    //    new Vector2(3, 3), 
-    //    new Vector2(3, 2),
-    //    new Vector2(3, 1)
-    //};
 
     private GameObject snakeHead;
     private List<GameObject> snakeTileList = new List<GameObject>();
@@ -44,8 +38,9 @@ public class Snake : MonoBehaviour
         snakeBody.Add(new Vector3(3, 3));
         snakeBody.Add(new Vector3(3, 2));
         snakeBody.Add(new Vector3(3, 1));
+        snakeBody.Add(new Vector3(3, 0));
+        snakeBody.Add(new Vector3(2, 0));
 
-        //headCoordinates = snakeBody[0];
         RenderSnake();
     }
 
@@ -70,11 +65,17 @@ public class Snake : MonoBehaviour
             //Bottom
             else if (snakeBody[0].y < 0)
             {
-                new Vector3(snakeBody[0].x, gridMax);
+                snakeBody[0] = new Vector3(snakeBody[0].x, gridMax);
             }
-            //Debug.Log(snakeBody.ToString());
+            else if (snakeBody[0].x > gridMax)
+            {
+                snakeBody[0] = new Vector3(0, snakeBody[0].y);
+            }
+            else if (snakeBody[0].x < 0)
+            {
+                snakeBody[0] = new Vector3(gridMax, snakeBody[0].y);
+            }
             UpdateSnake();
-            //grid.SnakeRenderer(headCoordinates[0], headCoordinates[1], snakeHead);
         }
     }
 
@@ -105,11 +106,115 @@ public class Snake : MonoBehaviour
         }
     }
 
+    private int CornerPieceRotationCalculation(int snakeTileNumber)
+    {
+        Vector3 previousTile = snakeBody[snakeTileNumber - 1];
+        Vector3 currentTile = snakeBody[snakeTileNumber];
+        Vector3 nextTile = snakeBody[snakeTileNumber + 1];
+
+        bool rotate0 = (previousTile.x == currentTile.x - 1 && nextTile.y == currentTile.y + 1) || (previousTile.y == currentTile.y + 1 && nextTile.x == currentTile.x - 1);
+        bool rotate90 = (previousTile.y == currentTile.y - 1 && nextTile.x == currentTile.x - 1) || (previousTile.x == currentTile.x - 1 && nextTile.y == currentTile.y - 1);
+        bool rotate180 = (previousTile.x == currentTile.x + 1 && nextTile.y == currentTile.y - 1) || (previousTile.y == currentTile.y - 1 && nextTile.x == currentTile.x + 1);
+        bool rotate270 = (previousTile.y == currentTile.y + 1 && nextTile.x == currentTile.x + 1) || (previousTile.x == currentTile.x + 1 && nextTile.y == currentTile.y + 1);
+
+        if (rotate0)
+        {
+            return 0;
+        }
+        else if(rotate90)
+        {
+            return 90;
+        }
+        else if (rotate180)
+        {
+            return 180;
+        }
+        else if (rotate270)
+        {
+            return 270;
+        }
+        else
+        {
+            Debug.Log("Corner Piece Calculation Failed");
+            return 360;
+        }
+    }
+
+    private int StraightPieceRotationCalculation(int snakeTileNumber)
+    {
+        Vector3 previousTile = snakeBody[snakeTileNumber - 1];
+        Vector3 currentTile = snakeBody[snakeTileNumber];
+        Vector3 nextTile = snakeBody[snakeTileNumber + 1];
+
+        bool rotate0 = previousTile.x == nextTile.x;
+        bool roate90 = previousTile.y == nextTile.y;
+
+        if(rotate0)
+        {
+            return 0;
+        }
+        else if(roate90)
+        {
+            return 90;
+        }
+
+        Debug.Log("Calculation Failed");
+        return 360;
+    }
+
+
+    private bool IsStraightPiece(int snakeTileNumber)
+    {
+        Vector3 previousTile = snakeBody[snakeTileNumber - 1];
+        Vector3 currentTile = snakeBody[snakeTileNumber];
+        Vector3 nextTile = snakeBody[snakeTileNumber + 1];
+
+        bool leftRight = previousTile.x == nextTile.x;
+        bool upDown = previousTile.y == nextTile.y;
+        bool previousHorizontalCross = nextTile.x 
+
+        if(leftRight || upDown)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     private void UpdateSnake()
     {
         int snakeTileNumber = 0;
+
         foreach (GameObject snakeTile in snakeTileList)
         {
+            snakeTileSprite = snakeTile.GetComponent<SpriteRenderer>();
+            if (snakeTileNumber > 0 && snakeTileNumber < snakeTileList.Count - 1) // If first and not last
+            {
+                if(IsStraightPiece(snakeTileNumber))
+                {
+                    snakeTileSprite.sprite = snakeBodySprite;
+                    snakeTile.transform.eulerAngles = Vector3.forward * StraightPieceRotationCalculation(snakeTileNumber);
+                }
+                else
+                {
+                    snakeTileSprite.sprite = snakeCurveSprite;
+                    snakeTile.transform.eulerAngles = Vector3.forward * CornerPieceRotationCalculation(snakeTileNumber);
+                }
+            }
+            else if (snakeTileNumber == snakeTileList.Count - 1) // If last Tile
+            {
+                if (snakeBody[snakeTileNumber].x == snakeBody[snakeTileNumber - 1].x)
+                {
+                    snakeTile.transform.eulerAngles = Vector3.forward * 0;
+                }
+                //Left Right
+                else if (snakeBody[snakeTileNumber].y == snakeBody[snakeTileNumber - 1].y)
+                {
+                    snakeTile.transform.eulerAngles = Vector3.forward * 90;
+                }
+            }
             snakeTile.transform.position = new Vector3(snakeBody[snakeTileNumber].x - (gridAdjusted - 0.5f), snakeBody[snakeTileNumber].y - (gridAdjusted - 0.5f));
             snakeTileNumber += 1;
         }
@@ -161,6 +266,5 @@ public class Snake : MonoBehaviour
             //headCoordinates.x += 1;
             snakeHead.transform.eulerAngles = Vector3.forward * 270;
         }
-        
     }
 }
