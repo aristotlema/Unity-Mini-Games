@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64f5b6e7f64287149b32b101053429c1, type: 3}
   m_Name: Theme
   m_EditorClassIdentifier: 
-  primary_bg: {r: 1, g: 1, b: 1, a: 1}
+  primary_bg: {r: 1, g: 0.023584902, b: 0.023584902, a: 1}
   primary_text: {r: 0, g: 0, b: 0, a: 1}
   secondary_bg: {r: 0.4716981, g: 0.4716981, b: 0.4716981, a: 1}
-  secondary_text: {r: 0, g: 0, b: 0, a: 1}
+  secondary_text: {r: 0, g: 0.14879274, b: 1, a: 1}
   tertiary_bg: {r: 0, g: 0.010000949, b: 0.9622642, a: 1}
-  tertiary_text: {r: 1, g: 0.995283, b: 0.995283, a: 1}
+  tertiary_text: {r: 1, g: 0.9583334, b: 0, a: 1}
   disable: {r: 0, g: 0, b: 0, a: 1}
