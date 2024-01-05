@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class View : MonoBehaviour
+public class View : CustomUIComponent
 {
     public ViewSO viewData;
 
@@ -18,25 +18,14 @@ public class View : MonoBehaviour
 
     private VerticalLayoutGroup verticalLayoutGroup;
 
-    private void Awake()
-    {
-        Init();
-    }
-
-    public void Init()
-    {
-        Setup();
-        Configure();
-    }
-
-    private void Setup()
+    public override void Setup()
     {
         verticalLayoutGroup = GetComponent<VerticalLayoutGroup>();
         imageTop = containerTop.GetComponent<Image>();
         imageCenter = containerCenter.GetComponent<Image>();
         imageBottom = containerBottom.GetComponent<Image>();
     }
-    private void Configure()
+    public override void Configure()
     {
         verticalLayoutGroup.padding = viewData.padding;
         verticalLayoutGroup.spacing = viewData.spacing;
@@ -45,9 +34,5 @@ public class View : MonoBehaviour
         imageCenter.color = viewData.theme.secondary_bg;
         imageBottom.color = viewData.theme.tertiary_bg;
 
-    }
-    private void OnValidate()
-    {
-        Init();
     }
 }
