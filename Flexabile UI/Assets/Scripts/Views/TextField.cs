@@ -21,4 +21,9 @@ public class TextField : CustomUIComponent
         textMeshProUGUI.font = textData.font;
         textMeshProUGUI.fontSize = textData.size;
     }
+
+    public void SetText(string text)
+    {
+        textMeshProUGUI.text = text;
+    }
 }
