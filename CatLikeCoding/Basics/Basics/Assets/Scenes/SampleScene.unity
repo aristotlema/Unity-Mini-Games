@@ -266,6 +266,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90a42cb073d42b24199f60ea19efc0af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hoursPivot: {fileID: 1627704301}
+  minutesPivot: {fileID: 1379595383}
+  secondsPivot: {fileID: 447380060}
 --- !u!1 &389099500
 GameObject:
   m_ObjectHideFlags: 0
