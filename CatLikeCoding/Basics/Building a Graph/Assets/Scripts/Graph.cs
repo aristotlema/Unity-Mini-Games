@@ -30,13 +30,13 @@ public class Graph : MonoBehaviour
 
     private void Update()
     {
-        float _time = Time.time;
+        float time = Time.time;
 
         for (int i = 0;i < points.Length;i++)
         {
             Transform point = points[i];
             Vector3 position = point.localPosition;
-            position.y = GraphY(position, _time);
+            position.y = FunctionLibrary.MultiWave(position.x, time);
             point.localPosition = position;
         }
     }
