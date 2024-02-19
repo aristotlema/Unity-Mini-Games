@@ -21,5 +21,6 @@ public class LocomotionState : PlayerState
     public override void Update()
     {
         player.HandleMovement();
+        player.HandleAim();
     }
 }
