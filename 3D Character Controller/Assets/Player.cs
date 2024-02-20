@@ -47,9 +47,10 @@ public class Player : MonoBehaviour
 
     public void HandleMovement()
     {
-        movementDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        //movementDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+        movementDirection = transform.forward;
 
-        // Vector2 lookingDirection = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0) * new Vector3(aimInput.x, 0, aimInput.y).normalized;
+        // Vector2 lookingDirection = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0) * 
 
         // Ray ray = Camera.main.ScreenPointToRay(aimInput);
 
@@ -57,27 +58,33 @@ public class Player : MonoBehaviour
 
         // Camera.main.transform.position = transform.position - Camera.main.transform.forward * 5;
 
-        if (movementDirection.magnitude > 0)
+        HandleAim();
+
+        if (moveInput.magnitude > 0)
         {
-            //Quaternion desiredRotation = Quaternion.LookRotation(lookingDirection, Vector3.up);
-
-            //transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 5 * Time.deltaTime);
-
             _characterController.Move(movementDirection * Time.deltaTime * walkSpeed);
         }
     }
 
     public void HandleAim()
     {
-        
-        //Vector2 lookingDirection = aimInput - new Vector2(transform.position.z, transform.position.y);
-        //lookingDirection.Normalize();
+        Vector3 lookingDirection = new Vector3(aimInput.x, 2, aimInput.y).normalized;
+
+        Vector3 worldMouse = Camera.main.ScreenToWorldPoint(new Vector3(aimInput.x, aimInput.y, transform.position.y));
+
+        Vector3 forward = worldMouse - transform.position;
+
+        //Quaternion desiredRotation = Quaternion.LookRotation(forward, Vector3.up);
+        transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
+
+        //transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 100 * Time.deltaTime);
+
         //Debug.Log(lookingDirection);
     }
 
     public void HandleRotation()
     {
-        //Vector3 lookingDirection = movementDirection * Time.deltaTime * walkSpeed;
+        Vector3 lookingDirection = movementDirection * Time.deltaTime * walkSpeed;
     }
 
     #region Configuration
