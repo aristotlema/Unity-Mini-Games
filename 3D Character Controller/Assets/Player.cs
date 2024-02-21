@@ -20,7 +20,10 @@ public class Player : MonoBehaviour
     private Vector3 movementDirection;
     [SerializeField] private float walkSpeed = 1.5f;
 
+    private Transform cameraTransform;
+
     private Vector2 aimInput;
+    [SerializeField] private float aimSensitivity = 20f;
 
     public PlayerStateMachine stateMachine {  get; private set; }
     public LocomotionState locomotionState { get; private set; }
@@ -47,44 +50,27 @@ public class Player : MonoBehaviour
 
     public void HandleMovement()
     {
-        //movementDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
-        movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
+        Vector3 movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
 
-        // Vector2 lookingDirection = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0) * 
-
-        // Ray ray = Camera.main.ScreenPointToRay(aimInput);
-
-        //Camera.main.transform.localEulerAngles = new Vector3(aimInput.x, aimInput.y, 0);
-
-        // Camera.main.transform.position = transform.position - Camera.main.transform.forward * 5;
-
-        // HandleAim();
+        // off set mouse input by the cameras world position
+        movementDirection = movementDirection.x * cameraTransform.right.normalized + movementDirection.z * cameraTransform.forward.normalized;
+        movementDirection.y = 0f;
 
         if (moveInput.magnitude > 0)
         {
             _characterController.Move(movementDirection * Time.deltaTime * walkSpeed);
         }
-    }
 
-    public void HandleAim()
-    {
-        Vector3 lookingDirection = new Vector3(aimInput.x, 2, aimInput.y).normalized;
-
-        Vector3 worldMouse = Camera.main.ScreenToWorldPoint(new Vector3(aimInput.x, aimInput.y, transform.position.y));
-
-        Vector3 forward = worldMouse - transform.position;
-
-        //Quaternion desiredRotation = Quaternion.LookRotation(forward, Vector3.up);
-        transform.rotation = Quaternion.LookRotation(forward, Vector3.up);
-
-        //transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 100 * Time.deltaTime);
-
-        //Debug.Log(lookingDirection);
+        // Rotate toward the camera
+        Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, aimSensitivity * Time.deltaTime);
     }
 
     #region Configuration
     private void Configure()
     {
+        cameraTransform = Camera.main.transform;
+
         _player = GetComponent<Player>();
         _characterController = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
