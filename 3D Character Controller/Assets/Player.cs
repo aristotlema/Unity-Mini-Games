@@ -48,7 +48,7 @@ public class Player : MonoBehaviour
     public void HandleMovement()
     {
         //movementDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
-        movementDirection = transform.forward;
+        movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
 
         // Vector2 lookingDirection = Quaternion.Euler(0, Camera.main.transform.eulerAngles.y, 0) * 
 
@@ -58,7 +58,7 @@ public class Player : MonoBehaviour
 
         // Camera.main.transform.position = transform.position - Camera.main.transform.forward * 5;
 
-        HandleAim();
+        // HandleAim();
 
         if (moveInput.magnitude > 0)
         {
@@ -80,11 +80,6 @@ public class Player : MonoBehaviour
         //transform.rotation = Quaternion.Slerp(transform.rotation, desiredRotation, 100 * Time.deltaTime);
 
         //Debug.Log(lookingDirection);
-    }
-
-    public void HandleRotation()
-    {
-        Vector3 lookingDirection = movementDirection * Time.deltaTime * walkSpeed;
     }
 
     #region Configuration
