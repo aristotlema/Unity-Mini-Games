@@ -832,7 +832,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   virtualCamera: {fileID: 0}
   animator: {fileID: 940808737}
-  walkSpeed: 3
+  walkSpeed: 8
+  rotationSpeed: 20
 --- !u!114 &1367548507
 MonoBehaviour:
   m_ObjectHideFlags: 0

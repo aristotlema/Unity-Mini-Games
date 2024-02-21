@@ -23,7 +23,7 @@ public class Player : MonoBehaviour
     private Transform cameraTransform;
 
     private Vector2 aimInput;
-    [SerializeField] private float aimSensitivity = 20f;
+    [SerializeField] private float rotationSpeed = 20f;
 
     public PlayerStateMachine stateMachine {  get; private set; }
     public LocomotionState locomotionState { get; private set; }
@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
 
         // Rotate toward the camera
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, aimSensitivity * Time.deltaTime);
+        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
     }
 
     #region Configuration

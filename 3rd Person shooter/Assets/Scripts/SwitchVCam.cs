@@ -16,6 +16,7 @@ public class SwitchVCam : MonoBehaviour
     {
         virtualCamera = GetComponent<CinemachineVirtualCamera>();
         aimAction = playerInput.actions["Aim"];
+        aimCanvas.enabled = false;
     }
 
     private void OnEnable()
