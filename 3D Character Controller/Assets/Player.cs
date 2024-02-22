@@ -70,6 +70,14 @@ public class Player : MonoBehaviour
         // Rotate toward the camera
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+        Animation();
+    }
+
+    public void Animation()
+    {
+        animator.SetFloat("xInput", moveInput.x, .1f, Time.deltaTime);
+        animator.SetFloat("yInput", moveInput.y, .1f, Time.deltaTime);
     }
 
     #region Configuration
