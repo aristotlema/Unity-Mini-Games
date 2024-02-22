@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using Unity.IO.LowLevel.Unsafe;
 
 public class Player : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class Player : MonoBehaviour
     private CharacterController _characterController;
     public PlayerAim aim { get; private set; }
 
-    private Vector2 moveInput;
+    public Vector2 moveInput { get; private set; }
     private Vector3 movementDirection;
     [SerializeField] private float walkSpeed = 1.5f;
 
@@ -26,21 +27,26 @@ public class Player : MonoBehaviour
     [SerializeField] private float rotationSpeed = 20f;
 
     public PlayerStateMachine stateMachine {  get; private set; }
+    public PlayerIdleState idleState { get; private set; }
+    public PlayerWalkingState walkingState { get; private set; }
     public LocomotionState locomotionState { get; private set; }
     private void Awake()
     {
         controls = new PlayerControls();
-        stateMachine = new PlayerStateMachine();
         aim = new PlayerAim();
 
+        stateMachine = new PlayerStateMachine();
+        idleState = new PlayerIdleState(this, stateMachine, "Idle");
+        walkingState = new PlayerWalkingState(this, stateMachine, "Walking");
         locomotionState = new LocomotionState(this, stateMachine, "Locomotion");
 
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     private void Start()
     {
         Configure();
-        stateMachine.Initialize(locomotionState);
+        stateMachine.Initialize(idleState);
     }
 
     private void Update()

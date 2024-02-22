@@ -7,9 +7,7 @@ using UnityEngine;
 public class PlayerAim : MonoBehaviour
 {
     private Player _player;
-    private PlayerControls _controls;
-
-    
+    private PlayerControls _controls;    
     
     // Start is called before the first frame update
     void Start()
@@ -27,7 +25,5 @@ public class PlayerAim : MonoBehaviour
     private void AssignInputEvents()
     {
         _controls = _player.controls;
-
-        
     }
 }
