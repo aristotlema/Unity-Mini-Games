@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
 using Unity.IO.LowLevel.Unsafe;
+using Unity.VisualScripting;
+using System;
 
 public class Player : MonoBehaviour
 {
@@ -15,11 +17,15 @@ public class Player : MonoBehaviour
     private Player _player;
     private PlayerControls _controls;
     private CharacterController _characterController;
+    [SerializeField] private bool isGrounded;
     public PlayerAim aim { get; private set; }
 
     public Vector2 moveInput { get; private set; }
-    private Vector3 movementDirection;
+    [SerializeField] private Vector3 movementDirection;
     [SerializeField] private float walkSpeed = 1.5f;
+    private float gravity = -9.81f;
+    private float jumpHeight = 1.04f;
+    private float verticalVelocity;
 
     private Transform cameraTransform;
 
@@ -40,7 +46,7 @@ public class Player : MonoBehaviour
         walkingState = new PlayerWalkingState(this, stateMachine, "Walking");
         locomotionState = new LocomotionState(this, stateMachine, "Locomotion");
 
-        Cursor.lockState = CursorLockMode.Locked;
+        
     }
 
     private void Start()
@@ -56,22 +62,40 @@ public class Player : MonoBehaviour
 
     public void HandleMovement()
     {
-        Vector3 movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
-
+        isGrounded = _characterController.isGrounded;
+        movementDirection = new Vector3(moveInput.x, 0, moveInput.y);
+        
         // off set mouse input by the cameras world position
         movementDirection = movementDirection.x * cameraTransform.right.normalized + movementDirection.z * cameraTransform.forward.normalized;
         movementDirection.y = 0f;
+        
 
         if (moveInput.magnitude > 0)
         {
             _characterController.Move(movementDirection * Time.deltaTime * walkSpeed);
         }
 
+        ApplyGravity();
+
         // Rotate toward the camera
         Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
 
         Animation();
+    }
+
+    private void ApplyGravity()
+    {
+        
+        if (isGrounded && verticalVelocity < 0)
+        {
+            verticalVelocity = 0f;
+        }
+
+        verticalVelocity += gravity * Time.deltaTime;
+        Vector3 appliedVelocity = new Vector3(0, verticalVelocity, 0);
+
+        _characterController.Move(appliedVelocity * Time.deltaTime);
     }
 
     public void Animation()
@@ -83,6 +107,8 @@ public class Player : MonoBehaviour
     #region Configuration
     private void Configure()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+
         cameraTransform = Camera.main.transform;
 
         _player = GetComponent<Player>();
@@ -101,6 +127,14 @@ public class Player : MonoBehaviour
 
         _controls.Player.Aim.performed += context => aimInput = context.ReadValue<Vector2>();
         _controls.Player.Aim.canceled += context => aimInput = Vector2.zero;
+
+        _controls.Player.Jump.performed += _ => Jump();
+    }
+
+    private void Jump()
+    {
+        if(isGrounded)
+            verticalVelocity += Mathf.Sqrt(jumpHeight * -3.0f * gravity);
     }
 
     private void OnEnable()

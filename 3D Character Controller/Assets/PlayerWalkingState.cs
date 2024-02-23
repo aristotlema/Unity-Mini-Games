@@ -21,7 +21,6 @@ public class PlayerWalkingState : PlayerState
     public override void Update()
     {
         base.Update();
-        player.HandleMovement();
 
         if (player.moveInput.magnitude == 0)
             stateMachine.ChangeState(player.idleState);

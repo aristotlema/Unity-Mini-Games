@@ -27,7 +27,7 @@ public class PlayerState
 
     public virtual void Update()
     {
-
+        player.HandleMovement();
     }
     public virtual void Exit()
     {
