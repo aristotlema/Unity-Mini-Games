@@ -8,45 +8,34 @@ using System;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] CinemachineVirtualCamera virtualCamera;
-
-    public PlayerControls controls { get; private set; }
-
-    public Animator animator;
-
     private Player _player;
-    private PlayerControls _controls;
+    public PlayerControls controls { get; private set; }
     private CharacterController _characterController;
-    [SerializeField] private bool isGrounded;
-    public PlayerAim aim { get; private set; }
-
-    public Vector2 moveInput { get; private set; }
-    [SerializeField] private Vector3 movementDirection;
-    [SerializeField] private float walkSpeed = 1.5f;
-    private float gravity = -9.81f;
-    private float jumpHeight = 1.04f;
-    private float verticalVelocity;
-
+    public Animator animator { get; private set; }
     private Transform cameraTransform;
 
-    private Vector2 aimInput;
+    [Header("Movment")]
+    [SerializeField] private Vector3 movementDirection;
+    [SerializeField] public Vector2 moveInput { get; private set; }
+    [SerializeField] private bool isGrounded;
+    [SerializeField] private float walkSpeed = 1.5f;
+    // [SerializeField] private float runSpeed = 3f;
     [SerializeField] private float rotationSpeed = 20f;
+    [SerializeField] private float jumpHeight = 1.04f;
+    private float gravity = -9.81f;
+    private float verticalVelocity;
+
 
     public PlayerStateMachine stateMachine {  get; private set; }
     public PlayerIdleState idleState { get; private set; }
     public PlayerWalkingState walkingState { get; private set; }
-    public LocomotionState locomotionState { get; private set; }
     private void Awake()
     {
         controls = new PlayerControls();
-        aim = new PlayerAim();
 
         stateMachine = new PlayerStateMachine();
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
         walkingState = new PlayerWalkingState(this, stateMachine, "Walking");
-        locomotionState = new LocomotionState(this, stateMachine, "Locomotion");
-
-        
     }
 
     private void Start()
@@ -86,7 +75,6 @@ public class Player : MonoBehaviour
 
     private void ApplyGravity()
     {
-        
         if (isGrounded && verticalVelocity < 0)
         {
             verticalVelocity = 0f;
@@ -96,6 +84,11 @@ public class Player : MonoBehaviour
         Vector3 appliedVelocity = new Vector3(0, verticalVelocity, 0);
 
         _characterController.Move(appliedVelocity * Time.deltaTime);
+    }
+    private void Jump()
+    {
+        if (isGrounded)
+            verticalVelocity += Mathf.Sqrt(jumpHeight * -3.0f * gravity);
     }
 
     public void Animation()
@@ -120,27 +113,19 @@ public class Player : MonoBehaviour
 
     private void AssignInputEvents()
     {
-        _controls = _player.controls;
+        controls = _player.controls;
 
-        _controls.Player.Move.performed += context => moveInput = context.ReadValue<Vector2>();
-        _controls.Player.Move.canceled += context => moveInput = Vector2.zero;
+        controls.Player.Move.performed += context => moveInput = context.ReadValue<Vector2>();
+        controls.Player.Move.canceled += context => moveInput = Vector2.zero;
 
-        _controls.Player.Aim.performed += context => aimInput = context.ReadValue<Vector2>();
-        _controls.Player.Aim.canceled += context => aimInput = Vector2.zero;
-
-        _controls.Player.Jump.performed += _ => Jump();
-    }
-
-    private void Jump()
-    {
-        if(isGrounded)
-            verticalVelocity += Mathf.Sqrt(jumpHeight * -3.0f * gravity);
+        controls.Player.Jump.performed += _ => Jump();
     }
 
     private void OnEnable()
     {
         controls.Enable();
     }
+
     private void OnDestroy()
     {
         controls.Disable();

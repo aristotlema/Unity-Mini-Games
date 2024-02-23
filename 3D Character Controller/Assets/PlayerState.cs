@@ -7,8 +7,6 @@ public class PlayerState
     protected PlayerStateMachine stateMachine;
     protected Player player;
 
-    protected float xInput;
-    protected float yInput;
     protected string animationName;
 
     protected float stateTimer;
